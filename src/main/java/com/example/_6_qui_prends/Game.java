@@ -20,6 +20,12 @@ public class Game {
         dealCards();
         setupRows();
     }
+    public void printRows() {
+        for (int i = 0; i < rows.size(); i++) {
+            System.out.println("Colonne " + (i + 1) + ": " + rows.get(i));
+        }
+    }
+
 
     private List<Card> createDeck() {
         return IntStream.rangeClosed(1, 104)
@@ -28,10 +34,16 @@ public class Game {
     }
 
     private void dealCards() {
+        List<Card> deck = createDeck();
+        Collections.shuffle(deck);
+
         for (Player player : players) {
-            for (int i = 0; i < 10; i++) {
-                player.addToHand(deck.remove(0));
-            }
+            List<Card> hand = deck.subList(0, 10);
+            deck = deck.subList(10, deck.size());
+            player.setHand(new ArrayList<>(hand));
+
+            // Triez la main du joueur par ordre croissant
+            player.getHand().sort(Comparator.comparingInt(Card::getValue));
         }
     }
 
@@ -44,6 +56,9 @@ public class Game {
     }
 
     public void playRound(Scanner scanner) {
+        System.out.println("\nColonnes avant le tour :");
+        printRows();
+
         List<Card> selectedCards = new ArrayList<>();
 
         for (Player player : players) {

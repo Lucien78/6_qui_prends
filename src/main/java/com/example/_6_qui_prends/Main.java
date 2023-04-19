@@ -28,8 +28,8 @@ public class Main {
         players.add(new AIPlayer("IA 2"));
 
         Game game = new Game(players);
-        game.initializeGame();
 
+        game.initializeGame();
         // Play 10 rounds
         for (int i = 0; i < 10; i++) {
             System.out.println("Tour " + (i + 1) + " :");
