@@ -1,159 +1,153 @@
 package com.example._6_qui_prends;
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class Game {
     private List<Player> players;
-    private List<Card> deck;
-    private List<List<Card>> rows;
+    private List<Pile> piles;
+    private Deck deck;
 
     public Game(List<Player> players) {
+        if (players.size() < 2 || players.size() > 6) {
+            throw new IllegalArgumentException("Number of players must be between 2 and 6");
+        }
         this.players = players;
-        this.deck = createDeck();
-        this.rows = new ArrayList<>();
+        this.piles = new ArrayList<>();
+        this.deck = new Deck();
     }
 
-    public void initializeGame() {
-        Collections.shuffle(deck);
-        dealCards();
-        setupRows();
-    }
-    public void printRows() {
-        for (int i = 0; i < rows.size(); i++) {
-            System.out.println("Colonne " + (i + 1) + ": " + rows.get(i));
-        }
-    }
-
-
-    private List<Card> createDeck() {
-        return IntStream.rangeClosed(1, 104)
-                .mapToObj(Card::new)
-                .collect(Collectors.toList());
-    }
-
-    private void dealCards() {
-        List<Card> deck = createDeck();
-        Collections.shuffle(deck);
-
+    public void startGame() {
+        // Shuffle the deck and deal 10 cards to each player
+        deck.shuffle();
         for (Player player : players) {
-            List<Card> hand = deck.subList(0, 10);
-            deck = deck.subList(10, deck.size());
-            player.setHand(new ArrayList<>(hand));
-
-            // Triez la main du joueur par ordre croissant
-            player.getHand().sort(Comparator.comparingInt(Card::getValue));
+            player.receiveCards(deck.drawCards(10));
         }
-    }
 
-    private void setupRows() {
+        // Start with four piles, each with one card from the deck
         for (int i = 0; i < 4; i++) {
-            List<Card> row = new ArrayList<>();
-            row.add(deck.remove(0));
-            rows.add(row);
+            piles.add(new Pile(deck.drawCard()));
         }
+
+        // Play rounds until no cards left
+        while (!deck.isEmpty()) {
+            playRound();
+        }
+
+        // Determine the winner
+        Player winner = determineWinner();
+        System.out.println("The winner is: " + winner.getName());
     }
 
-    public void playRound(Scanner scanner) {
-        System.out.println("\nColonnes avant le tour :");
-        printRows();
-
-        List<Card> selectedCards = new ArrayList<>();
-
+    private void playRound() {
+        // Each player plays a card
+        List<Card> playedCards = new ArrayList<>();
         for (Player player : players) {
-            Card selectedCard;
-
+            Card playedCard;
             if (player instanceof AIPlayer) {
-                selectedCard = ((AIPlayer) player).selectCard(this);
-                System.out.println(player.getName() + " (IA) joue la carte : " + selectedCard);
+                playedCard = ((AIPlayer) player).playCard1();
             } else {
-                System.out.println(player.getName() + ", voici votre main : " + player.getHand());
-                System.out.print("Entrez l'index de la carte à jouer (0 - " + (player.getHand().size() - 1) + ") : ");
-                int selectedIndex = scanner.nextInt();
-                selectedCard = player.getHand().get(selectedIndex);
-            }
-
-            selectedCard.setPlayer(player); // Ajoutez cette ligne
-            selectedCards.add(selectedCard);
-        }
-
-        for (Card card : selectedCards) {
-            addCardToRow(card, scanner);
-            Player player = card.getPlayer(); // Remplacez findPlayerByCard(card) par card.getPlayer()
-            player.getHand().remove(card);
-        }
-    }
-
-    private void addCardToRow(Card card, Scanner scanner) {
-        int bestRowIndex = -1;
-        int bestDifference = Integer.MAX_VALUE;
-
-        for (int i = 0; i < rows.size(); i++) {
-            List<Card> row = rows.get(i);
-            if (row.get(row.size() - 1).getValue() < card.getValue()) {
-                int difference = card.getValue() - row.get(row.size() - 1).getValue();
-                if (difference < bestDifference) {
-                    bestDifference = difference;
-                    bestRowIndex = i;
+                System.out.println(player.getName() + ", your hand is: ");
+                List<Card> hand = player.getHand();
+                for (int i = 0; i < hand.size(); i++) {
+                    System.out.println((i+1) + ". " + hand.get(i).toString());
                 }
+                System.out.println("Enter the index of the card you want to play:");
+                int cardIndex = getConsoleInput() - 1;  // Adjust for 0-based index
+                playedCard = player.playCard(cardIndex);
             }
+            playedCards.add(playedCard);
         }
 
-        if (bestRowIndex == -1) {
-            Player player = card.getPlayer();;
+        // Sort the played cards
+        Collections.sort(playedCards, Comparator.comparing(Card::getNumber));
 
-            if (player instanceof AIPlayer) {
-                bestRowIndex = ((AIPlayer) player).selectRowToTake(this);
-                System.out.println(player.getName() + " (IA) prend la rangée " + (bestRowIndex + 1));
-            } else {
-                bestRowIndex = selectRowToTake(card, scanner);
-            }
-
-            List<Card> rowToTake = rows.get(bestRowIndex);
-            player.takeCards(rowToTake);
-            rowToTake.clear();
+        // Add each card to the appropriate pile
+        for (Card card : playedCards) {
+            addCardToPile(card);
         }
-
-        rows.get(bestRowIndex).add(card);
     }
 
-        private int selectRowToTake(Card card, Scanner scanner) {
-            System.out.println("Aucune rangée valide pour la carte " + card + ".");
-            System.out.println("Rangées actuelles : ");
-            for (int i = 0; i < rows.size(); i++) {
-                System.out.println((i + 1) + ": " + rows.get(i));
-            }
+    // Get console input - this is a simple implementation for demonstration
+    private int getConsoleInput() {
+        Scanner scanner = new Scanner(System.in);
+        return scanner.nextInt();
+    }
 
-            Player player = findPlayerByCard(card);
-            System.out.println(player.getName() + ", veuillez choisir une rangée à prendre (1-" + rows.size() + ") : ");
-            int selectedRowIndex = scanner.nextInt() - 1;
 
-            // Vérifiez si l'index sélectionné est valide.
-            while (selectedRowIndex < 0 || selectedRowIndex >= rows.size()) {
-                System.out.println("Index invalide. Veuillez entrer un nombre entre 1 et " + rows.size() + " : ");
-                selectedRowIndex = scanner.nextInt() - 1;
-            }
+    private void addCardToPile(Card card) {
+        // Find the pile that the card should be added to
+        Pile pile = findPileForCard(card);
 
-            return selectedRowIndex;
+        // If the pile is full, the player takes the pile and the card starts a new pile
+        if (pile.isFull()) {
+            Player player = getPlayerWhoPlayedCard(card);
+            player.addScore(pile.getBullheadCount());
+            pile.clear();
         }
 
-    private Player findPlayerByCard(Card card) {
+        // Add the card to the pile
+        pile.addCard(card);
+    }
+
+    private Player getPlayerWhoPlayedCard(Card card) {
         for (Player player : players) {
             if (player.getHand().contains(card)) {
                 return player;
             }
         }
-        throw new IllegalStateException("Joueur non trouvé pour la carte : " + card);
+        throw new IllegalArgumentException("No player found who played card " + card.getNumber());
+    }
 
+    private Pile findPileForCard(Card card) {
+        // TODO: Implement according to the game rules
+        return piles.get(0);  // Just as a placeholder
+    }
+
+    private Player determineWinner() {
+        Player winner = players.get(0);
+        for (Player player : players) {
+            if (player.getScore() < winner.getScore()) {
+                winner = player;
+            }
+        }
+        return winner;
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Ask for number of players
+        System.out.println("Enter number of players (2 to 6):");
+        int numPlayers = scanner.nextInt();
+
+        // Validate input
+        if (numPlayers < 2 || numPlayers > 6) {
+            System.out.println("Invalid number of players. Please enter a number between 2 and 6.");
+            return;
+        }
+
+        // Create players
+        List<Player> players = new ArrayList<>();
+        for (int i = 0; i < numPlayers; i++) {
+            System.out.println("Is player " + (i + 1) + " a human or AI? (Enter 'human' or 'AI')");
+            String playerType = scanner.next();
+
+            if (playerType.equalsIgnoreCase("human")) {
+                System.out.println("Enter the name of human player " + (i + 1) + ":");
+                String playerName = scanner.next();
+                players.add(new Player(playerName));
+            } else if (playerType.equalsIgnoreCase("AI")) {
+                players.add(new AIPlayer("AI Player " + (i + 1)));
+            } else {
+                System.out.println("Invalid player type. Please enter 'human' or 'AI'.");
+                return;
+            }
+        }
+
+        // Create and start game
+        Game game = new Game(players);
+        game.startGame();
     }
 
 
-    public List<Player> getPlayers() {
-        return players;
-    }
-
-    public List<List<Card>> getRows() {
-        return rows;
-    }
 }

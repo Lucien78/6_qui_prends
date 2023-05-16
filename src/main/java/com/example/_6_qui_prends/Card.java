@@ -1,50 +1,30 @@
 package com.example._6_qui_prends;
 
 public class Card {
-        private int value;
-        private int bulls;
-        private Player player;
+    private final int number;
+    private final int bullheadCount;
 
-        public Card(int value) {
-            this.value = value;
-            this.bulls = calculateBulls(value);
-        }
-        public Player getPlayer() {
-        return player;
-         }
-         public void setPlayer(Player player) {
-        this.player = player;
-        }
+    public Card(int number) {
+        this.number = number;
+        this.bullheadCount = calculateBullheadCount(number);
+    }
 
-        private int calculateBulls(int value) {
-            if (value % 55 == 0) {
-                return 7;
-            } else if (value % 11 == 0) {
-                return 5;
-            } else if (value % 5 == 0) {
-                return 2;
-            } else if (value % 10 == 0) {
-                return 3;
-            } else {
-                return 1;
-            }
-        }
+    public int getNumber() {
+        return this.number;
+    }
 
-        public int getValue() {
-            return value;
-        }
+    public int getBullheadCount() {
+        return this.bullheadCount;
+    }
 
-        public int getBulls() {
-            return bulls;
-        }
-
-        @Override
-        public String toString() {
-            return "Card{" +
-                    "value=" + value +
-                    ", bulls=" + bulls +
-                    '}';
-        }
-
+    private int calculateBullheadCount(int number) {
+        if (number % 10 == 0) return 3;
+        else if (number % 5 == 0) return 2;
+        else if (number % 10 == 0) return 5;
+        else return 1;
+    }
+    @Override
+    public String toString() {
+        return "Card: " + number + ", Bullheads: " + bullheadCount;
+    }
 }
-

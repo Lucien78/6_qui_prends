@@ -4,59 +4,48 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Player {
-    private String name;
+    private final String name;
     private List<Card> hand;
-    private List<Card> takenCards;
+    private int score;
 
     public Player(String name) {
         this.name = name;
-        this.hand = new ArrayList<>();
-        this.takenCards = new ArrayList<>();
+        this.score = 0;
+        this.hand = new ArrayList<>();  // Initialize 'hand' as a new ArrayList
     }
 
     public String getName() {
-        return name;
-    }
-
-    public void addToHand(Card card) {
-        hand.add(card);
-    }
-
-    public Card playCard(int index) {
-        if (index < 0 || index >= hand.size()) {
-            throw new IllegalArgumentException("Invalid card index.");
-        }
-        Card card = hand.get(index);
-        hand.remove(index);
-        return card;
-    }
-
-    public void takeCards(List<Card> cards) {
-        takenCards.addAll(cards);
+        return this.name;
     }
 
     public int getScore() {
-        return takenCards.stream().mapToInt(Card::getBulls).sum();
+        return this.score;
+    }
+
+    public void addScore(int additionalScore) {
+        if (additionalScore < 0) {
+            throw new IllegalArgumentException("Score cannot be negative");
+        }
+        this.score += additionalScore;
     }
 
     public List<Card> getHand() {
-        return hand;
+        return this.hand;
     }
 
-    public List<Card> getTakenCards() {
-        return takenCards;
-    }
-    public void setHand(List<Card> hand) {
-        this.hand = hand;
+    public void receiveCards(List<Card> cards) {
+        if (cards == null || cards.isEmpty()) {
+            throw new IllegalArgumentException("Cards cannot be null or empty");
+        }
+        this.hand.addAll(cards);
     }
 
-    @Override
-    public String toString() {
-        return "Player{" +
-                "name='" + name + '\'' +
-                ", hand=" + hand +
-                ", takenCards=" + takenCards +
-                '}';
+    public Card playCard(int cardIndex) {
+        if (cardIndex < 0 || cardIndex >= this.hand.size()) {
+            throw new IllegalArgumentException("Invalid card index");
+        }
+        return this.hand.remove(cardIndex);
     }
+
+
 }
-
