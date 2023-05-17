@@ -6,6 +6,7 @@ public class Game {
     private List<Player> players;
     private List<Pile> piles;
     private Deck deck;
+    private List<Pile> table;
 
     public Game(List<Player> players) {
         if (players.size() < 2 || players.size() > 6) {
@@ -14,6 +15,7 @@ public class Game {
         this.players = players;
         this.piles = new ArrayList<>();
         this.deck = new Deck();
+        this.table = new ArrayList<>();
     }
 
     public void startGame() {
@@ -25,7 +27,7 @@ public class Game {
 
         // Start with four piles, each with one card from the deck
         for (int i = 0; i < 4; i++) {
-            piles.add(new Pile(deck.drawCard()));
+            table.add(new Pile(deck.drawCard())); // Utilisez "table" au lieu de "piles"
         }
 
         // Play rounds until no cards left
@@ -36,11 +38,22 @@ public class Game {
         // Determine the winner
         Player winner = determineWinner();
         System.out.println("The winner is: " + winner.getName());
+
+        // Retirez ce bloc de code car il n'est pas nécessaire
     }
+
+    private void displayGameState() {
+        System.out.println("\nCurrent game state:");
+        for (int i = 0; i < table.size(); i++) {
+            System.out.println("Pile " + (i+1) + ": " + table.get(i).toString());
+        }
+    }
+
 
     private void playRound() {
         // Each player plays a card
-        List<Card> playedCards = new ArrayList<>();
+        List<PlayedCard> playedCards = new ArrayList<>();
+        displayGameState();
         for (Player player : players) {
             Card playedCard;
             if (player instanceof AIPlayer) {
@@ -55,17 +68,19 @@ public class Game {
                 int cardIndex = getConsoleInput() - 1;  // Adjust for 0-based index
                 playedCard = player.playCard(cardIndex);
             }
-            playedCards.add(playedCard);
+            PlayedCard playerAndCard = new PlayedCard(playedCard, player);
+            playedCards.add(playerAndCard);
         }
 
         // Sort the played cards
-        Collections.sort(playedCards, Comparator.comparing(Card::getNumber));
+        Collections.sort(playedCards, Comparator.comparing(c -> c.getCard().getNumber()));
 
         // Add each card to the appropriate pile
-        for (Card card : playedCards) {
-            addCardToPile(card);
+        for (PlayedCard playedCard : playedCards) {
+            addCardToPile(playedCard);
         }
     }
+
 
     // Get console input - this is a simple implementation for demonstration
     private int getConsoleInput() {
@@ -74,20 +89,17 @@ public class Game {
     }
 
 
-    private void addCardToPile(Card card) {
-        // Find the pile that the card should be added to
-        Pile pile = findPileForCard(card);
-
-        // If the pile is full, the player takes the pile and the card starts a new pile
+    private void addCardToPile(PlayedCard playedCard) {
+        Pile pile = findPileForCard(playedCard);
         if (pile.isFull()) {
-            Player player = getPlayerWhoPlayedCard(card);
+            Player player = playedCard.getPlayer();
             player.addScore(pile.getBullheadCount());
             pile.clear();
         }
-
-        // Add the card to the pile
-        pile.addCard(card);
+        pile.addCard(playedCard.getCard());
     }
+
+
 
     private Player getPlayerWhoPlayedCard(Card card) {
         for (Player player : players) {
@@ -98,10 +110,53 @@ public class Game {
         throw new IllegalArgumentException("No player found who played card " + card.getNumber());
     }
 
-    private Pile findPileForCard(Card card) {
-        // TODO: Implement according to the game rules
-        return piles.get(0);  // Just as a placeholder
+    private Pile findPileForCard(PlayedCard playedCard) {
+        Card card = playedCard.getCard();
+        Player player = playedCard.getPlayer();
+        Pile chosenPile = null;
+
+        // If card can be legally placed on a pile, place it on the pile with the highest top card
+        for (Pile pile : table) {
+            if (pile.getTopCard().getNumber() < card.getNumber()) {
+                if (chosenPile == null || pile.getTopCard().getNumber() > chosenPile.getTopCard().getNumber()) {
+                    chosenPile = pile;
+                }
+            }
+        }
+
+        // If card cannot be legally placed, player must take a pile
+        if (chosenPile == null) {
+            chosenPile = choosePile(player);
+        }
+
+        return chosenPile;
     }
+    private Pile choosePile(Player player) {
+        // If player is AI, simply choose the pile with the least bullheads
+        if (player instanceof AIPlayer) {
+            Pile minPile = table.get(0);
+            for (Pile pile : table) {
+                if (pile.getBullheadCount() < minPile.getBullheadCount()) {
+                    minPile = pile;
+                }
+            }
+            return minPile;
+        }
+        // If player is human, prompt them to choose a pile
+        else {
+            while (true) {
+                System.out.println("You cannot place your card. Choose a pile to take (1-4):");
+                int pileIndex = getConsoleInput() - 1;  // Adjust for 0-based index
+                if (pileIndex >= 0 && pileIndex < table.size()) {
+                    return table.get(pileIndex);
+                } else {
+                    System.out.println("Invalid pile number. Please enter a number between 1 and 4.");
+                }
+            }
+        }
+    }
+
+
 
     private Player determineWinner() {
         Player winner = players.get(0);

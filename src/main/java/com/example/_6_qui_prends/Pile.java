@@ -7,10 +7,15 @@ public class Pile {
     private static final int MAX_SIZE = 5;
     private List<Card> cards;
 
+    public Pile() {
+        this.cards = new ArrayList<>();
+    }
+
     public Pile(Card startingCard) {
         this.cards = new ArrayList<>();
         this.cards.add(startingCard);
     }
+
 
     public List<Card> getCards() {
         return this.cards;
@@ -33,5 +38,17 @@ public class Pile {
 
     public void clear() {
         this.cards.clear();
+    }
+    public Card getTopCard() {
+        if (cards.isEmpty()) {
+            throw new IllegalStateException("Cannot get top card from an empty pile");
+        }
+        return cards.get(cards.size() - 1);
+    }
+
+
+    @Override
+    public String toString() {
+        return cards.toString();
     }
 }

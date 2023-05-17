@@ -3,6 +3,7 @@ package com.example._6_qui_prends;
 public class Card {
     private final int number;
     private final int bullheadCount;
+    private Player player;
 
     public Card(int number) {
         this.number = number;
@@ -22,6 +23,13 @@ public class Card {
         else if (number % 5 == 0) return 2;
         else if (number % 10 == 0) return 5;
         else return 1;
+    }
+    public Player getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
     }
     @Override
     public String toString() {
