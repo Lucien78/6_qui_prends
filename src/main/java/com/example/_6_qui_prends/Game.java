@@ -31,10 +31,19 @@ public class Game {
         }
 
         // Play rounds until no cards left
-        while (!deck.isEmpty()) {
+        boolean gameIsOver = false;
+        while (!gameIsOver) {
             playRound();
-        }
 
+            // Check if all players have played all their cards
+            gameIsOver = true;
+            for (Player player : players) {
+                if (!player.getHand().isEmpty()) {
+                    gameIsOver = false;
+                    break;
+                }
+            }
+        }
         // Determine the winner
         Player winner = determineWinner();
         System.out.println("The winner is: " + winner.getName());
