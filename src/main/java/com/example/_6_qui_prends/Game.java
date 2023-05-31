@@ -7,6 +7,9 @@ public class Game {
     private List<Pile> piles;
     private Deck deck;
     private List<Pile> table;
+    private int currentPlayerIndex;
+
+    private static int numberOfPlayers;
 
     public Game(List<Player> players) {
         if (players.size() < 2 || players.size() > 6) {
@@ -16,10 +19,9 @@ public class Game {
         this.piles = new ArrayList<>();
         this.deck = new Deck();
         this.table = new ArrayList<>();
+        this.currentPlayerIndex = 0;
     }
-
-    public void startGame() {
-        // Shuffle the deck and deal 10 cards to each player
+    public void initializeGame() {
         deck.shuffle();
         for (Player player : players) {
             player.receiveCards(deck.drawCards(10));
@@ -29,6 +31,31 @@ public class Game {
         for (int i = 0; i < 4; i++) {
             table.add(new Pile(deck.drawCard())); // Utilisez "table" au lieu de "piles"
         }
+    }
+
+
+    public void playNextRound() {
+        // Play rounds until no cards left
+        if (allCardsPlayed()) {
+            // Determine the winner
+            Player winner = determineWinner();
+            System.out.println("The winner is: " + winner.getName());
+        } else {
+            playRound();
+        }
+    }
+
+    private boolean allCardsPlayed() {
+        for (Player player : players) {
+            if (!player.getHand().isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void startGame() {
+
 
         // Play rounds until no cards left
         boolean gameIsOver = false;
@@ -51,44 +78,51 @@ public class Game {
         // Retirez ce bloc de code car il n'est pas nécessaire
     }
 
-    private void displayGameState() {
-        System.out.println("\nCurrent game state:");
+    public String getGameState() {
+        StringBuilder gameState = new StringBuilder("\nCurrent game state:\n");
         for (int i = 0; i < table.size(); i++) {
-            System.out.println("Pile " + (i+1) + ": " + table.get(i).toString());
+            gameState.append("Pile ").append(i+1).append(": ").append(table.get(i).toString()).append("\n");
         }
+        return gameState.toString();
+    }
+    public Player getCurrentPlayer() {
+        return players.get(currentPlayerIndex);
+    }
+    public List<Pile> getPiles() {
+        return table;
     }
 
 
     private void playRound() {
-        // Each player plays a card
-        List<PlayedCard> playedCards = new ArrayList<>();
-        displayGameState();
-        for (Player player : players) {
-            Card playedCard;
-            if (player instanceof AIPlayer) {
-                playedCard = ((AIPlayer) player).playCard1();
-            } else {
-                System.out.println(player.getName() + ", your hand is: ");
-                List<Card> hand = player.getHand();
-                for (int i = 0; i < hand.size(); i++) {
-                    System.out.println((i+1) + ". " + hand.get(i).toString());
-                }
-                System.out.println("Enter the index of the card you want to play:");
-                int cardIndex = getConsoleInput() - 1;  // Adjust for 0-based index
-                playedCard = player.playCard(cardIndex);
+        // Récupérez le joueur courant
+        Player player = getCurrentPlayer();
+
+        // Logique pour faire jouer la carte par le joueur
+        Card playedCard;
+        if (player instanceof AIPlayer) {
+            playedCard = ((AIPlayer) player).playCard1();
+            playedCard.setPlayer(player);  // Ajout de la liaison entre la carte et le joueur
+        } else {
+            System.out.println(player.getName() + ", votre main est: ");
+            List<Card> hand = player.getHand();
+            for (int i = 0; i < hand.size(); i++) {
+                System.out.println((i+1) + ". " + hand.get(i).toString());
             }
-            PlayedCard playerAndCard = new PlayedCard(playedCard, player);
-            playedCards.add(playerAndCard);
+            System.out.println("Entrez l'index de la carte que vous voulez jouer:");
+            int cardIndex = getConsoleInput() - 1;  // Ajustement pour l'index basé sur 0
+            playedCard = player.playCard(cardIndex);
+            playedCard.setPlayer(player);  // Ajout de la liaison entre la carte et le joueur
         }
 
-        // Sort the played cards
-        Collections.sort(playedCards, Comparator.comparing(c -> c.getCard().getNumber()));
+        // Créez un objet PlayedCard et ajoutez-le à la pile appropriée
+        PlayedCard playerAndCard = new PlayedCard(playedCard, player);
+        addCardToPile(playerAndCard);
 
-        // Add each card to the appropriate pile
-        for (PlayedCard playedCard : playedCards) {
-            addCardToPile(playedCard);
-        }
+        // Mettez à jour l'indice du joueur actuel
+        currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
     }
+
+
 
 
     // Get console input - this is a simple implementation for demonstration
@@ -108,16 +142,6 @@ public class Game {
         pile.addCard(playedCard.getCard());
     }
 
-
-
-    private Player getPlayerWhoPlayedCard(Card card) {
-        for (Player player : players) {
-            if (player.getHand().contains(card)) {
-                return player;
-            }
-        }
-        throw new IllegalArgumentException("No player found who played card " + card.getNumber());
-    }
 
     private Pile findPileForCard(PlayedCard playedCard) {
         Card card = playedCard.getCard();
@@ -158,7 +182,8 @@ public class Game {
                 int pileIndex = getConsoleInput() - 1;  // Adjust for 0-based index
                 if (pileIndex >= 0 && pileIndex < table.size()) {
                     return table.get(pileIndex);
-                } else {
+                }
+                else {
                     System.out.println("Invalid pile number. Please enter a number between 1 and 4.");
                 }
             }
@@ -210,6 +235,7 @@ public class Game {
 
         // Create and start game
         Game game = new Game(players);
+        game.initializeGame();
         game.startGame();
     }
 

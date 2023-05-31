@@ -49,6 +49,11 @@ public class Pile {
 
     @Override
     public String toString() {
-        return cards.toString();
+        StringBuilder sb = new StringBuilder();
+        for (Card card : cards) {
+            sb.append(card.toString());
+            sb.append("\n");  // Ajoute une nouvelle ligne après chaque carte
+        }
+        return sb.toString();
     }
 }
