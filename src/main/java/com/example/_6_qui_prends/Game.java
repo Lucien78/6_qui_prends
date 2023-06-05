@@ -56,12 +56,12 @@ public class Game {
 
     public void startGame() {
 
-
+        System.out.println(getGameState());
         // Play rounds until no cards left
         boolean gameIsOver = false;
         while (!gameIsOver) {
             playRound();
-
+            System.out.println(getGameState());
             // Check if all players have played all their cards
             gameIsOver = true;
             for (Player player : players) {
@@ -173,6 +173,11 @@ public class Game {
                     minPile = pile;
                 }
             }
+            // Ajoutez les têtes de taureau de la pile au score du joueur
+            player.addScore(minPile.getBullheadCount());
+            // Supprimez les cartes de la pile
+            minPile.clear();
+            // Retournez la pile
             return minPile;
         }
         // If player is human, prompt them to choose a pile
@@ -181,6 +186,11 @@ public class Game {
                 System.out.println("You cannot place your card. Choose a pile to take (1-4):");
                 int pileIndex = getConsoleInput() - 1;  // Adjust for 0-based index
                 if (pileIndex >= 0 && pileIndex < table.size()) {
+                    // Ajoutez les têtes de taureau de la pile au score du joueur
+                    player.addScore(table.get(pileIndex).getBullheadCount());
+                    // Supprimez les cartes de la pile
+                    table.get(pileIndex).clear();
+                    // Retournez la pile
                     return table.get(pileIndex);
                 }
                 else {
