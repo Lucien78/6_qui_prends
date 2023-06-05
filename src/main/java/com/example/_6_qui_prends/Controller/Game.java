@@ -1,4 +1,11 @@
-package com.example._6_qui_prends;
+package com.example._6_qui_prends.Controller;
+
+import com.example._6_qui_prends.Card.Card;
+import com.example._6_qui_prends.Card.Deck;
+import com.example._6_qui_prends.Card.Pile;
+import com.example._6_qui_prends.Card.PlayedCard;
+import com.example._6_qui_prends.Player.AIPlayer;
+import com.example._6_qui_prends.Player.Player;
 
 import java.util.*;
 

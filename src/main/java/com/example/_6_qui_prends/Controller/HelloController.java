@@ -1,4 +1,4 @@
-package com.example._6_qui_prends;
+package com.example._6_qui_prends.Controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;

@@ -1,11 +1,14 @@
-package com.example._6_qui_prends;
+package com.example._6_qui_prends.Controller;
 
+import AIPlayer;
+import com.example._6_qui_prends.Card.Card;
+import com.example._6_qui_prends.Card.Pile;
+import com.example._6_qui_prends.Player.Player;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 

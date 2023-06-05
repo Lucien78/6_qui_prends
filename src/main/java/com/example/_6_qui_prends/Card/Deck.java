@@ -1,4 +1,6 @@
-package com.example._6_qui_prends;
+package com.example._6_qui_prends.Card;
+
+import com.example._6_qui_prends.Card.Card;
 
 import java.util.ArrayList;
 import java.util.Collections;
