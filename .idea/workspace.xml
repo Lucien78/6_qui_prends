@@ -6,6 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="005de4ea-bbd4-46a0-aaea-7dbb77d80820" name="Changes" comment="changes">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/_6_qui_prends/Controller/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/_6_qui_prends/Controller/Game.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/_6_qui_prends/Controller/MonJeu.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/_6_qui_prends/Controller/MonJeu.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/_6_qui_prends/Player/AIPlayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/_6_qui_prends/Player/AIPlayer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/module-info.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,17 +48,27 @@
   "keyToString": {
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "C:/Users/guill/OneDrive/Documents/Isep/Projet_A1/6_qui_prends",
+    "last_opened_file_path": "C:/Users/guill/OneDrive/Documents/Isep/Projet_A1/6_qui_prends2",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "preferences.externalResources",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\guill\OneDrive\Documents\Isep\Projet_A1\6_qui_prends2\src\main\java\com\example\_6_qui_prends\Controller" />
+    </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="com.example._6_qui_prends" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration default="true" type="JetRunConfigurationType">
       <method v="2">
@@ -90,6 +104,7 @@
       <workItem from="1685708810417" duration="663000" />
       <workItem from="1685957013742" duration="1065000" />
       <workItem from="1685965139626" duration="1067000" />
+      <workItem from="1685966331873" duration="3783000" />
     </task>
     <task id="LOCAL-00001" summary="changes">
       <created>1681833040131</created>
@@ -119,7 +134,14 @@
       <option name="project" value="LOCAL" />
       <updated>1685957927507</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="changes">
+      <created>1685966550126</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1685966550126</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -178,5 +200,9 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="changes" />
     <option name="LAST_COMMIT_MESSAGE" value="changes" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>

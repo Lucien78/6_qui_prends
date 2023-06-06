@@ -1,6 +1,6 @@
 package com.example._6_qui_prends.Controller;
 
-import AIPlayer;
+import com.example._6_qui_prends.Player.AIPlayer;
 import com.example._6_qui_prends.Card.Card;
 import com.example._6_qui_prends.Card.Pile;
 import com.example._6_qui_prends.Player.Player;
@@ -18,11 +18,11 @@ import java.util.Optional;
 
 public class MonJeu extends Application {
 
-    private Game game; // votre classe de jeu
+    private Game game;
 
 
     private Label currentPlayerLabel; // un label pour afficher le joueur courant
-    private HBox pilesBox; // une boîte horizontale pour afficher les piles de cartes
+    private HBox pilesBox; // affichage des cartes
     private Button nextRoundButton;
     private HBox playerHandBox;
     private Button startButton;
@@ -73,7 +73,7 @@ public class MonJeu extends Application {
         if (result.isPresent()) {
             numPlayers = Integer.parseInt(result.get());
         } else {
-            return; // L'utilisateur a annulé la boîte de dialogue
+            return;
         }
 
         List<Player> players = new ArrayList<>();
@@ -84,10 +84,8 @@ public class MonJeu extends Application {
 
             Optional<ButtonType> typeResult = typeDialog.showAndWait();
             if (typeResult.isPresent() && typeResult.get() == ButtonType.OK) {
-                // L'utilisateur a confirmé que le joueur est un humain
                 players.add(new Player("Joueur " + (i + 1)));
             } else {
-                // L'utilisateur n'a pas confirmé, donc le joueur est une IA
                 players.add(new AIPlayer("IA Player " + (i + 1)));
             }
         }

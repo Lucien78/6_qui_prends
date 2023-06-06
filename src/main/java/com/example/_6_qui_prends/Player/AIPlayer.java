@@ -1,6 +1,7 @@
 package com.example._6_qui_prends.Player;
 
 import com.example._6_qui_prends.Card.Card;
+import com.example._6_qui_prends.Player.Player;
 
 import java.util.Comparator;
 

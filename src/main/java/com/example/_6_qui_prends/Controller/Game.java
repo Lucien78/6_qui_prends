@@ -34,17 +34,14 @@ public class Game {
             player.receiveCards(deck.drawCards(10));
         }
 
-        // Start with four piles, each with one card from the deck
         for (int i = 0; i < 4; i++) {
-            table.add(new Pile(deck.drawCard())); // Utilisez "table" au lieu de "piles"
+            table.add(new Pile(deck.drawCard()));
         }
     }
 
 
     public void playNextRound() {
-        // Play rounds until no cards left
         if (allCardsPlayed()) {
-            // Determine the winner
             Player winner = determineWinner();
             System.out.println("The winner is: " + winner.getName());
         } else {
@@ -64,12 +61,10 @@ public class Game {
     public void startGame() {
 
         System.out.println(getGameState());
-        // Play rounds until no cards left
         boolean gameIsOver = false;
         while (!gameIsOver) {
             playRound();
             System.out.println(getGameState());
-            // Check if all players have played all their cards
             gameIsOver = true;
             for (Player player : players) {
                 if (!player.getHand().isEmpty()) {
@@ -78,11 +73,9 @@ public class Game {
                 }
             }
         }
-        // Determine the winner
         Player winner = determineWinner();
         System.out.println("The winner is: " + winner.getName());
 
-        // Retirez ce bloc de code car il n'est pas nécessaire
     }
 
     public String getGameState() {
@@ -101,14 +94,12 @@ public class Game {
 
 
     private void playRound() {
-        // Récupérez le joueur courant
         Player player = getCurrentPlayer();
 
-        // Logique pour faire jouer la carte par le joueur
         Card playedCard;
         if (player instanceof AIPlayer) {
             playedCard = ((AIPlayer) player).playCard1();
-            playedCard.setPlayer(player);  // Ajout de la liaison entre la carte et le joueur
+            playedCard.setPlayer(player);
         } else {
             System.out.println(player.getName() + ", votre main est: ");
             List<Card> hand = player.getHand();
@@ -116,23 +107,21 @@ public class Game {
                 System.out.println((i+1) + ". " + hand.get(i).toString());
             }
             System.out.println("Entrez l'index de la carte que vous voulez jouer:");
-            int cardIndex = getConsoleInput() - 1;  // Ajustement pour l'index basé sur 0
+            int cardIndex = getConsoleInput() - 1;
             playedCard = player.playCard(cardIndex);
-            playedCard.setPlayer(player);  // Ajout de la liaison entre la carte et le joueur
+            playedCard.setPlayer(player);
         }
 
-        // Créez un objet PlayedCard et ajoutez-le à la pile appropriée
+
         PlayedCard playerAndCard = new PlayedCard(playedCard, player);
         addCardToPile(playerAndCard);
 
-        // Mettez à jour l'indice du joueur actuel
         currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
     }
 
 
 
 
-    // Get console input - this is a simple implementation for demonstration
     private int getConsoleInput() {
         Scanner scanner = new Scanner(System.in);
         return scanner.nextInt();
@@ -155,7 +144,7 @@ public class Game {
         Player player = playedCard.getPlayer();
         Pile chosenPile = null;
 
-        // If card can be legally placed on a pile, place it on the pile with the highest top card
+
         for (Pile pile : table) {
             if (pile.getTopCard().getNumber() < card.getNumber()) {
                 if (chosenPile == null || pile.getTopCard().getNumber() > chosenPile.getTopCard().getNumber()) {
@@ -164,7 +153,7 @@ public class Game {
             }
         }
 
-        // If card cannot be legally placed, player must take a pile
+
         if (chosenPile == null) {
             chosenPile = choosePile(player);
         }
@@ -172,7 +161,7 @@ public class Game {
         return chosenPile;
     }
     private Pile choosePile(Player player) {
-        // If player is AI, simply choose the pile with the least bullheads
+
         if (player instanceof AIPlayer) {
             Pile minPile = table.get(0);
             for (Pile pile : table) {
@@ -180,14 +169,12 @@ public class Game {
                     minPile = pile;
                 }
             }
-            // Ajoutez les têtes de taureau de la pile au score du joueur
+            // Ajouter les têtes de taureau de la pile au score du joueur
             player.addScore(minPile.getBullheadCount());
-            // Supprimez les cartes de la pile
+
             minPile.clear();
-            // Retournez la pile
             return minPile;
         }
-        // If player is human, prompt them to choose a pile
         else {
             while (true) {
                 System.out.println("You cannot place your card. Choose a pile to take (1-4):");
